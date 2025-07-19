@@ -3,7 +3,7 @@ class Scene:
   def __init__(self):
     self.act = None
 
-  def watch(self, act):
+  def play(self, act):
     self.act = act
 
   def update(self, delta_nanos:int):
