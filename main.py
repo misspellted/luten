@@ -13,9 +13,9 @@ app.on_delta = lambda delta_nanos: logger.debug(f"delta_nanos {delta_nanos}")
 scn = PyGameTerm()
 
 if app.open(*scn.dimensions):
-  # scn.play(Greeting(scn))
+  scn.play(Greeting(scn))
   # scn.play(Rainbow(scn))
-  scn.play(Rainbow(scn, rolling=1))
+  # scn.play(Rainbow(scn, rolling=1))
 
   app.watch(scn)
 

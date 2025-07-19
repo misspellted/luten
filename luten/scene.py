@@ -79,6 +79,13 @@ class PyGameTerm(Scene):
       back_code = (self.attributes[index] & 0xF0)
       self.attributes[index] = back_code | (color_code & 0x0F)
 
+  def swap(self):
+    if self.attributes != None:
+      index = self.cursor[1] * self.columns + self.cursor[0]
+      back_code = (self.attributes[index] & 0xF0)
+      fore_code = self.attributes[index] & 0x0F
+      self.attributes[index] = (fore_code << 4) | (back_code >> 4)
+
   def set_char(self, character:int):
     if self.characters != None:
       self.characters[self.cursor[1] * self.columns + self.cursor[0]] = (character & 0xFF)
@@ -90,6 +97,7 @@ class PyGameTerm(Scene):
   def advance(self):
     if self.cursor != None:
       column, row = self.cursor
+      attributes = self.attributes[row * self.columns + column]
       column += 1
 
       if self.columns <= column:
@@ -100,6 +108,7 @@ class PyGameTerm(Scene):
         row = 0 # Wrap around (TODO: Shift lines up).
 
     self.cursor = (column, row)
+    self.attributes[row * self.columns + column] = attributes
 
   def update(self, delta_nanos:int):
     if self.act != None:

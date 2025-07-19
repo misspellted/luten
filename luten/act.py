@@ -10,11 +10,17 @@ class Greeting(Act):
   def __init__(self, scene):
     Act.__init__(self, scene)
 
+    # "Amber"...-ish terminal..
+    self.scene.set_fore(0x06)
+
     # For testing, the traditional is only fair.
     motd = bytes("Hello, World!", "UTF-8")
     for i in range(len(motd)):
       self.scene.set_char(motd[i])
       self.scene.advance()
+      self.scene.swap()
+
+      # BUG: The background is filled on the cell, blitted to the buffer, and then the background is filled on cursor, blitted with blending to buffer, causing higher intensity.
 
 class Rainbow(Act):
   ROLLING_INTERVAL = 1_000_000 * 16 # ms
