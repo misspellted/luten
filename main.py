@@ -1,35 +1,26 @@
 
-from luten.application import PyGameTerm
+from luten.application import PyGameApp
+from luten.scene import PyGameTerm
+from luten.act import Greeting, Rainbow
 
 deltas = list()
 
-app = PyGameTerm()
-# app.on_delta = lambda delta_nanos: deltas.append(delta_nanos)
+app = PyGameApp()
+app.on_delta = lambda delta_nanos: deltas.append(delta_nanos)
 
-# For testing, the traditional is only fair.
-motd = bytes("Hello, World!", "UTF-8")
-for i in range(len(motd)):
-  app.set_char(motd[i])
-  app.advance()
+scn = PyGameTerm()
 
-# def rainbow(delta_nanos:int):
-#   deltas.append(delta_nanos)
-#   app.hidden = True
-#   for row in range(app.rows):
-#     for column in range(app.columns):
-#       app.set_back((row * app.columns + column) & 0xF)
-#       app.advance()
+if app.open(*scn.dimensions):
+  # scn.watch(Greeting(scn))
+  # scn.watch(Rainbow(scn))
+  scn.watch(Rainbow(scn, rolling=1))
 
-#     # Rolling rainbow.
-#     app.advance()
+  app.watch(scn)
 
-# app.on_delta = rainbow
-
-try:
-  app.start()
-except Exception as e:
-  print(e)
-  app.stop(forced=True)
+  try:
+    app.start()
+  except KeyboardInterrupt:
+    app.stop(forced=True)
 
 if 0 < len(deltas):
   avg_delta_ns = sum(deltas)/len(deltas)
