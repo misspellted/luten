@@ -88,7 +88,7 @@ class PyGameTerm(Scene):
 
   def set_char(self, character:int):
     if self.characters != None:
-      self.characters[self.cursor[1] * self.columns + self.cursor[0]] = (character & 0xFF)
+      self.characters[self.cursor[1] * self.columns + self.cursor[0]] = ((ord(character) if isinstance(character, str) else character) & 0xFF)
 
   def set_pos(self, column:int, row:int):
     if self.cursor != None and 0 <= column < self.columns and 0 <= row < self.rows:
