@@ -1,67 +1,13 @@
 
-import time
+from .clients.base import Client as Application
 
-class Application:
-  """
-  An abstract application based on a simple loop.
-  """
-
-  def __init__(self):
-    self.running:bool = False
-    self.nanos:int = 0
-
-  def process(self):
-    """
-    Processes events, such as user input or platform notifications.
-    """
+class Display:
+  def refresh(self):
     pass
-
-  def on_delta(self, delta_nanos:int):
-    pass
-
-  def update(self, delta_nanos:int):
-    """
-    Updates the application state, after processing events.
-    """
-    pass
-
-  def terminate(self):
-    """
-    Provides the application a chance to clean up resources after the simple
-    loop exits, prior to process termination.
-    """
-    pass
-
-  def stop(self, forced:bool):
-    """
-    Sets the flag to stop the simple loop.
-    """
-    self.running = False
-
-    if not forced:
-      self.terminate()
-
-  def start(self):
-    """
-    Starts the simple loop.
-    """
-    self.running = True
-    self.nanos = time.time_ns()
-
-    while self.running:
-      self.process()
-
-      if self.running:
-        nanos = time.time_ns()
-        delta, self.nanos = nanos - self.nanos, nanos
-        self.on_delta(delta_nanos=delta)
-        self.update(delta_nanos=delta)
-
-    self.stop(forced=False)
 
 class GraphicalApplication(Application):
   """
-  An abstract extension of the application adding an notification point to refresh the display.
+  An abstract extension of an Application adding an notification point to refresh the display.
   """
   def __init__(self):
     Application.__init__(self)
