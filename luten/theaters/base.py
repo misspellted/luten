@@ -18,9 +18,11 @@ class Theater:
     """
     pass
 
-  def process(self):
+  def process(self) -> bool:
     """
     Processes events, such as user input or platform notifications.
+
+    Returns whether or not the processing resulted in a quit condition.
     """
     pass
 
@@ -49,7 +51,7 @@ class Theater:
     self.nanos = time.time_ns()
 
     while self.running:
-      self.process()
+      self.running = not self.process()
 
       if self.running:
         nanos = time.time_ns()

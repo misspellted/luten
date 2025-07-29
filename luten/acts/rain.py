@@ -70,5 +70,5 @@ class Rain(Act):
     for position in self.drops:
       logging.debug(f"Drop at {position}")
       self.stage[position] = (ord("*"), 7, 4)
-  
+
     return self.remaining_updates == 0

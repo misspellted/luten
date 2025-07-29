@@ -1,18 +1,17 @@
 
 from .base import Theater, Act
-from ..stages.terminal import Terminal
+from ..stages.piegame import PyGameTerm
 
-import logging, os
+import logging, os, pygame
 
-class Invoking(Theater):
+class Emulated(Theater):
   """
-  A theater utilizing the invoking terminal interface.
+  A theater utilizing the PyGame-based emulated terminal interface.
   """
-  def __init__(self):
+  def __init__(self, columns:int, rows:int):
     Theater.__init__(self)
-    dims = os.get_terminal_size()
-    logging.debug(dims)
-    self.stage:Terminal = Terminal(*os.get_terminal_size())
+    logging.debug((columns, rows))
+    self.stage:PyGameTerm = PyGameTerm(columns, rows)
     self.act:Act = None
 
   def perform(self, act:Act):
@@ -21,8 +20,14 @@ class Invoking(Theater):
       self.act.open(self.stage)
 
   def process(self) -> bool:
-    # TODO: Acquire user input via threaded input() calls.
-    return False
+    quitting = False
+
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        quitting = True
+        break
+    
+    return quitting
 
   def update(self, delta_nanos:int) -> bool:
     quitting = False
