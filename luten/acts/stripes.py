@@ -26,7 +26,7 @@ class Stripes(Act):
 
   def update(self, delta_nanos:int) -> bool:
     self.remaining_updates -= 1
-    logging.debug(f"Remaining updates: {self.remaining_updates}")
+    # logging.debug(f"Remaining updates: {self.remaining_updates}")
 
     if 0 < self.rolling:
       self.cooldown -= delta_nanos
