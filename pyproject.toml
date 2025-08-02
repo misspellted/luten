@@ -1,0 +1,23 @@
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "luten"
+version = "0.0.0"
+description = "A simple dungeon crawler for looting!"
+requires-python = ">= 3.11"
+license = "Unlicense"
+license-files = ["LICENSE"]
+classifiers = [
+  "Developerment Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+]
+
+[project.optional-dependencies]
+gui = ["pygame-ce"]
+
+[tool.setuptools]
+packages = ["luten"]
