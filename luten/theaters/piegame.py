@@ -10,7 +10,7 @@ class Emulated(Theater):
   """
   def __init__(self, columns:int, rows:int):
     Theater.__init__(self)
-    logging.debug((columns, rows))
+    # logging.debug((columns, rows))
     self.stage:PyGameTerm = PyGameTerm(columns, rows)
     self.act:Act = None
 

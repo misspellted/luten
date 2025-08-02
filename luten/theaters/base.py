@@ -1,7 +1,7 @@
 
 from ..acts.base import Act
 
-import time
+import time, os, logging
 
 class Theater:
   """
@@ -11,6 +11,8 @@ class Theater:
   def __init__(self):
     self.running:bool = False
     self.nanos:int = 0
+    self.workers = len(os.sched_getaffinity(0)) if os.name == 'posix' else os.cpu_count() or 1 # Adapted from comment on https://stackoverflow.com/a/58748125.
+    logging.debug(f"[Theater::__init__] - facility has {self.workers} worker(s) available")
 
   def perform(self, act:Act):
     """

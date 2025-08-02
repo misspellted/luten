@@ -11,7 +11,7 @@ class Invoking(Theater):
   def __init__(self):
     Theater.__init__(self)
     dims = os.get_terminal_size()
-    logging.debug(dims)
+    # logging.debug(dims)
     self.stage:Terminal = Terminal(*os.get_terminal_size())
     self.act:Act = None
 

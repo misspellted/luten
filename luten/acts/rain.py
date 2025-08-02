@@ -10,11 +10,13 @@ class Rain(Act):
   def __init__(self, max_updates:int):
     Act.__init__(self)
     self.stage:Stage = None
-    self.drops:list[tuple[int, int]] = list() # (col, row)
+    self.drops:list[tuple[int, int]] = [] # (col, row)
     self.max_drops:int = 10
     self.fall_cooldown:int = Rain.FALL_INTERVAL
     self.drop_cooldown:int = Rain.DROP_INTERVAL
     self.remaining_updates:int = max_updates
+    self.droplets:list[tuple[int, int]] = [] # (col, row)
+    self.max_droplets:int = self.max_drops ** 2 # Hopefully won't occur, but scenario of the case worst--.
 
   def open(self, stage:Stage):
     self.stage = stage
@@ -22,7 +24,7 @@ class Rain(Act):
 
   def update(self, delta_nanos:int) -> bool:
     self.remaining_updates -= 1
-    logging.debug(f"Remaining updates: {self.remaining_updates}")
+    # logging.debug(f"Remaining updates: {self.remaining_updates}")
 
     self.fall_cooldown -= delta_nanos
     self.drop_cooldown -= delta_nanos
@@ -31,6 +33,22 @@ class Rain(Act):
 
     if self.fall_cooldown <= 0:
       self.fall_cooldown = Rain.FALL_INTERVAL
+
+      # Zeroth, update positions of any current droplets.
+      for _ in range(len(self.droplets)):
+        column, row = self.droplets.pop(0)
+
+        # First clear the current position.
+        self.stage[(column, row)] = (ord(" "), 0, 0)
+
+        # Update the position.
+        row += 1
+
+        # The droplet is still falling.
+        if row < rows:
+          self.droplets.append((column, row))
+
+        # Otherwise, the droplet was absorbed by the ground.
 
       # First, update positions of any current drops.
       falling = list()
@@ -47,7 +65,13 @@ class Rain(Act):
         # If the drop didn't collide with the "ground" last update, then it is still falling (even if it collides this update).
         if row < rows:
           falling.append((column, row))
-        # Otherwise, the ground absorbed the rain... (ignoring it)
+        # Otherwise, spawn a rain droplet one of the sides.
+        else:
+          column += random.choice([-1, 1])
+
+          # But only if the column stays in range.
+          if (0 <= column < columns) and len(self.droplets) < self.max_droplets:
+            self.droplets.append((column, row - 2))
 
       self.drops.extend(falling)
       falling.clear()
@@ -66,9 +90,16 @@ class Rain(Act):
       self.drops.append(position)
 
     # Update the view.
-    logging.debug(f"{len(self.drops)} drop(s) to display...")
+    # logging.debug(f"{len(self.drops)} drop(s) to display...")
+
     for position in self.drops:
-      logging.debug(f"Drop at {position}")
+      # logging.debug(f"Drop at {position}")
       self.stage[position] = (ord("*"), 7, 4)
+
+    # logging.debug(f"{len(self.droplets)} droplet(s) to display...")
+    
+    for position in self.droplets:
+      # logging.debug(f"Droplet at {position}")
+      self.stage[position] = (ord("."), 7, 0)
 
     return self.remaining_updates == 0

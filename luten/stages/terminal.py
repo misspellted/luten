@@ -29,7 +29,7 @@ class TerminalCursor:
         self.cursor_moved(*self.position)
       else:
         dc, dr = self.position[0] - self.previous[0], self.position[1] - self.previous[1]
-        logging.debug(f"TerminalCursor::__check_cursor_moved() -> dc={dc}, dr={dr}")
+        # logging.debug(f"TerminalCursor::__check_cursor_moved() -> dc={dc}, dr={dr}")
         if 0 != dc or 0 != dr:
           self.cursor_moved(dc, dr)
 
@@ -88,6 +88,7 @@ class Terminal(Stage):
     if self.reset():
       self.cursor.cursor_moved = self.on_cursor_moved
       self.cursor.resize(*self.dimensions)
+      logging.debug(f"[Terminal::__init__] - {(columns, rows)} (characters)")
 
   def reset(self) -> bool:
     size = math.prod(self.dimensions)
@@ -154,54 +155,54 @@ class Terminal(Stage):
     self.on_refresh_arret(self.on_refresh_debut() - nanos)
 
   def reset_attributes(self):
-    logging.debug("reset_attributes()")
+    # logging.debug("reset_attributes()")
     offset = self.cursor.to_offset()
 
     if None != offset:
       self.attributes[offset] = (Terminal.BG_DEFAULT << 4) | Terminal.FG_DEFAULT
 
   def set_foreground_color(self, color:int):
-    logging.debug(f"set_foreground_color({color}) @ {self.cursor.position}")
+    # logging.debug(f"set_foreground_color({color}) @ {self.cursor.position}")
     offset = self.cursor.to_offset()
 
     if None != offset:
       previous = self.attributes[offset]
       updated = (previous & 0x70) | (color & 0x07)
-      logging.debug(f"set_foreground_color : attribute @ {self.cursor.position} : {previous:08b} -> {updated:08b}")
+      # logging.debug(f"set_foreground_color : attribute @ {self.cursor.position} : {previous:08b} -> {updated:08b}")
       self.attributes[offset] = updated
 
   def set_background_color(self, color:int):
     offset = self.cursor.to_offset()
-    logging.debug(f"set_background_color({color}) @ {self.cursor.position}")
+    # logging.debug(f"set_background_color({color}) @ {self.cursor.position}")
 
     if None != offset:
       previous = self.attributes[offset]
       updated = ((color & 0x07) << 4) | (previous & 0x07)
-      logging.debug(f"set_background_color : attribute @ {self.cursor.position} : {previous:08b} -> {updated:08b}")
+      # logging.debug(f"set_background_color : attribute @ {self.cursor.position} : {previous:08b} -> {updated:08b}")
       self.attributes[offset] = updated
 
   def invert_colors(self):
     offset = self.cursor.to_offset()
-    logging.debug(f"invert_colors() @ {self.cursor.position}")
+    # logging.debug(f"invert_colors() @ {self.cursor.position}")
 
     if None != offset:
       attribute = self.attributes[offset]
       self.attributes[offset] = ((attribute & 0x07) << 4) | ((attribute & 0x70) >> 4)
 
   def on_select_graphic_redition(self, sgr:str):
-    logging.debug(f"on_select_graphic_redition({sgr})")
+    # logging.debug(f"on_select_graphic_redition({sgr})")
 
     # No attribtes converts to a reset all attributes (CSI 0 m).
     if 0 == len(sgr):
       self.reset_attributes()
     else:
       attributes = sgr.split(";")
-      logging.debug(f"on_select_graphic_redition : Length of attributes: {len(attributes)}")
+      # logging.debug(f"on_select_graphic_redition : Length of attributes: {len(attributes)}")
 
       # Since certain attributes can have additional follow-up/on attributes, look-ahead is implemented here.
       for index in range(len(attributes)):
         attribute = attributes[index]
-        logging.debug(f"on_select_graphic_redition : attributes[{index}] = {attribute}")
+        # logging.debug(f"on_select_graphic_redition : attributes[{index}] = {attribute}")
 
         if attribute in [str(7)]:
           self.invert_colors()
@@ -213,12 +214,12 @@ class Terminal(Stage):
           self.set_background_color(int(attribute) - 40)
 
   def on_csi(self, csi:str):
-    logging.debug(f"on_csi({csi})")
+    # logging.debug(f"on_csi({csi})")
     if csi[-1] == 'm':
       self.on_select_graphic_redition(csi[:-1])
 
   def print(self, text:str):
-    logging.debug(f"print({text}) [{self.cursor.position}]")
+    # logging.debug(f"print({text}) [{self.cursor.position}]")
     if isinstance(text, str):
       index = 0
       while index < len(text):
