@@ -90,12 +90,16 @@ class Terminal(Stage):
       self.cursor.resize(*self.dimensions)
       logging.debug(f"[Terminal::__init__] - {(columns, rows)} (characters)")
 
+  def clear(self):
+    size = math.prod(self.dimensions)
+    self.attributes = [(Terminal.BG_DEFAULT << 4) | Terminal.FG_DEFAULT] * size
+    self.characters = [0x20] * size
+
   def reset(self) -> bool:
     size = math.prod(self.dimensions)
 
     if 0 < size:
-      self.attributes = [(Terminal.BG_DEFAULT << 4) | Terminal.FG_DEFAULT] * size
-      self.characters = [0x20] * size
+      self.clear()
 
     return 0 < size
 
@@ -143,6 +147,7 @@ class Terminal(Stage):
 
     print("\x1b[2J", end="")
     print("\x1b[H", end="")
+    self.cursor.position = (0, 0)
 
     for row in range(self.dimensions[1]):
       for column in range(self.dimensions[0]):

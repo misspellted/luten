@@ -208,4 +208,4 @@ __marimo__/
 
 # Ignore logs directory
 logs/
-unlog.sh
+cleanup.sh
