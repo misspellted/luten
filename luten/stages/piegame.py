@@ -38,7 +38,7 @@ class PyGameTerm(Terminal):
 
       self.cell = pygame.Rect(0, 0, longest, tallest)
       self.window = pygame.display.set_mode((columns * self.cell.width, rows * self.cell.height))
-      logging.debug(f"[PyGameTerm::__init__] - emulating Terminal's {(columns, rows)} (characters) with window of {self.window.get_size()} (pixels)")
+      logging.debug(f"[PyGameTerm::__init__] - emulating {(columns, rows)} (characters) with window of {self.window.get_size()} (pixels)")
 
   def refresh(self):
     # logging.debug(f"PyGameTerm::refresh() - windows is set? {None != self.window}")

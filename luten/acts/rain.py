@@ -70,8 +70,8 @@ class Rain(Act):
           column += random.choice([-1, 1])
 
           # But only if the column stays in range.
-          if 0 <= column < columns:
-            self.droplets.append((column, row - random.choice([1, 2, 3])))
+          if (0 <= column < columns) and len(self.droplets) < self.max_droplets:
+            self.droplets.append((column, row - 2))
 
       self.drops.extend(falling)
       falling.clear()
