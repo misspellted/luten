@@ -27,10 +27,10 @@ class Invoking(Theater):
   def update(self, delta_nanos:int) -> bool:
     quitting = False
 
-    self.stage.refresh()
-
     if None != self.act:
       quitting = self.act.update(delta_nanos)
+
+    self.stage.refresh()
     
     return quitting
 

@@ -17,6 +17,12 @@ class Stage:
     if 0 < self.axes:
       self.dimensions = tuple(dimensions)
 
+  def clear(self):
+    """
+    Clears the stage, perhaps in preparation for a new Act or Scene? Perhaps... (thinking_face)
+    """
+    pass
+
   def on_refresh_debut(self) -> int:
     """
     Provides a notification to generate the start time in nanoseconds before a refresh is performed.

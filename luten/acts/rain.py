@@ -38,9 +38,6 @@ class Rain(Act):
       for _ in range(len(self.droplets)):
         column, row = self.droplets.pop(0)
 
-        # First clear the current position.
-        self.stage[(column, row)] = (ord(" "), 0, 0)
-
         # Update the position.
         row += 1
 
@@ -55,9 +52,6 @@ class Rain(Act):
 
       for _ in range(len(self.drops)):
         column, row = self.drops.pop(0)
-
-        # First clear the current position.
-        self.stage[(column, row)] = (ord(" "), 0, 0)
 
         # Update the position.
         row += 1
@@ -90,6 +84,8 @@ class Rain(Act):
       self.drops.append(position)
 
     # Update the view.
+    self.stage.clear()
+
     # logging.debug(f"{len(self.drops)} drop(s) to display...")
 
     for position in self.drops:
