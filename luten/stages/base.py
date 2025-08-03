@@ -45,4 +45,4 @@ class Stage:
     """
     Ends the performance.
     """
-    passC
+    pass

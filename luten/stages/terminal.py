@@ -145,7 +145,7 @@ class Terminal(Stage):
   def refresh(self):
     nanos = self.on_refresh_debut()
 
-    print("\x1b[2J", end="")
+    # print("\x1b[2J", end="") # Looks like this causes a bit of flicker in Stripes/Rain/Shop acts. Both VS Code (integrated Bash) and separate Konsole (KDE) terminals have improved outputs. Very slight remaining flicker, but much more viewable! Based on a tip from RoberElderSoftware in their Day 100 stream.
     print("\x1b[H", end="")
     self.cursor.position = (0, 0)
 

@@ -4,15 +4,17 @@ from .base import Act, Stage
 import logging
 
 class Stripes(Act):
-  ROLLING_INTERVAL = 1_000_000 * 16 # ms
+  COOLDOWN = 1_000_000 * 500 # ms
+  ROLLING_INTERVAL = 1_000_000 * 33 # ms
 
   def __init__(self, max_updates:int, rolling:int=0):
     Act.__init__(self)
+    self.stage:Stage = None
+    self.cooldown = Stripes.COOLDOWN
     self.rolling = rolling
     self.rolled = 0
-    self.cooldown = Stripes.ROLLING_INTERVAL
-    self.remaining_updates:int = max_updates
-    self.stage:Stage = None
+    self.cooldown_rolling = Stripes.ROLLING_INTERVAL
+    self.updates_remaining:int = max_updates
 
   def open(self, stage:Stage):
     self.stage = stage
@@ -24,22 +26,33 @@ class Stripes(Act):
       for column in range(columns):
         stage[(column, row)] = (ord(" "), 0, column & 0x7) # You can feel the slowness on the opening...
 
+  def end(self):
+    self.stage.show_cursor()
+    Act.end(self)
+
   def update(self, delta_nanos:int) -> bool:
-    self.remaining_updates -= 1
-    # logging.debug(f"Remaining updates: {self.remaining_updates}")
+    ending = self.updates_remaining <= 0 and self.cooldown <= 0
 
-    if 0 < self.rolling:
-      self.cooldown -= delta_nanos
+    if not ending:
+      rolling = 0 < self.rolling and 0 < self.updates_remaining
+      # logging.debug(f"Remaining updates: {self.updates_remaining}")
 
-      if self.cooldown <= 0:
-        self.cooldown = Stripes.ROLLING_INTERVAL
-        self.rolled += self.rolling
+      if rolling:
+        self.cooldown_rolling -= delta_nanos
 
-        columns, rows = self.stage.dimensions
+        if self.cooldown_rolling <= 0:
+          self.cooldown_rolling = Stripes.ROLLING_INTERVAL
+          self.rolled += self.rolling
+          self.updates_remaining -= 1
 
-        for row in range(rows):
+          columns, rows = self.stage.dimensions
+
           for column in range(columns):
-            c = (column + self.rolled) % columns
-            self.stage[(column, row)] = (ord(" "), 0, c & 0x7)
+            for row in range(rows):
+              c = (column + self.rolled) % columns
+              self.stage[(column, row)] = (ord(" "), 0, c & 0x7)
 
-    return self.remaining_updates == 0
+      else:
+        self.cooldown -= delta_nanos
+
+    return ending
